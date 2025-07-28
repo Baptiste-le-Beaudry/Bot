@@ -1,0 +1,348 @@
+# Kubernetes ConfigMap for AI Trading Robot Configuration
+# Stores non-sensitive configuration data
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trading-bot-config
+  namespace: trading
+  labels:
+    app: trading-bot
+    component: config
+data:
+  # Main application configuration
+  APP_NAME: "AI Trading Robot"
+  APP_VERSION: "1.0.0"
+  
+  # Trading configuration
+  TRADING_MODE: "live"  # live, paper, backtest
+  INITIAL_CAPITAL: "100000"
+  BASE_CURRENCY: "USD"
+  
+  # Exchange configuration
+  ENABLED_EXCHANGES: "binance,coinbase,kraken"
+  DEFAULT_EXCHANGE: "binance"
+  
+  # Trading pairs
+  TRADING_PAIRS: |
+    BTCUSDT
+    ETHUSDT
+    BNBUSDT
+    SOLUSDT
+    ADAUSDT
+  
+  # Strategy configuration
+  ENABLED_STRATEGIES: "statistical_arbitrage,market_making,scalping"
+  DEFAULT_STRATEGY: "ensemble"
+  STRATEGY_ALLOCATION: |
+    statistical_arbitrage: 0.4
+    market_making: 0.3
+    scalping: 0.2
+    ml_adaptive: 0.1
+  
+  # Risk management
+  MAX_POSITION_SIZE: "0.1"  # 10% of portfolio
+  MAX_LEVERAGE: "3"
+  STOP_LOSS_PERCENTAGE: "0.02"  # 2%
+  TAKE_PROFIT_PERCENTAGE: "0.05"  # 5%
+  MAX_DRAWDOWN: "0.2"  # 20%
+  DAILY_LOSS_LIMIT: "0.05"  # 5%
+  
+  # Machine Learning configuration
+  ML_ENABLED: "true"
+  ML_MODEL_TYPE: "ensemble"  # dqn, ppo, sac, ensemble
+  ML_UPDATE_FREQUENCY: "3600"  # seconds
+  ML_LOOKBACK_WINDOW: "100"
+  ML_PREDICTION_HORIZON: "5"
+  
+  # Feature engineering
+  TECHNICAL_INDICATORS: |
+    SMA_5
+    SMA_20
+    EMA_12
+    EMA_26
+    RSI_14
+    MACD
+    BOLLINGER_BANDS
+    ATR_14
+    VOLUME_PROFILE
+    ORDER_FLOW_IMBALANCE
+  
+  # Data collection
+  DATA_COLLECTION_INTERVAL: "1"  # seconds
+  ORDERBOOK_DEPTH: "20"
+  CANDLE_TIMEFRAMES: "1m,5m,15m,1h,4h,1d"
+  DATA_RETENTION_DAYS: "365"
+  
+  # Database configuration
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "trading"
+  DB_POOL_SIZE: "20"
+  DB_POOL_OVERFLOW: "10"
+  DB_POOL_TIMEOUT: "30"
+  
+  # Redis configuration
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  REDIS_POOL_SIZE: "50"
+  CACHE_TTL: "300"  # seconds
+  
+  # Message queue configuration
+  KAFKA_BROKERS: "kafka-0.kafka-headless:9092,kafka-1.kafka-headless:9092,kafka-2.kafka-headless:9092"
+  KAFKA_TOPIC_PREFIX: "trading"
+  KAFKA_CONSUMER_GROUP: "trading-bot"
+  KAFKA_AUTO_OFFSET_RESET: "latest"
+  
+  # API configuration
+  API_PORT: "8080"
+  API_WORKERS: "4"
+  API_TIMEOUT: "30"
+  API_RATE_LIMIT: "100"  # requests per minute
+  CORS_ORIGINS: "https://app.trading-bot.io,https://admin.trading-bot.io"
+  
+  # WebSocket configuration
+  WS_PORT: "8081"
+  WS_PING_INTERVAL: "30"
+  WS_PING_TIMEOUT: "10"
+  WS_MAX_CONNECTIONS: "1000"
+  
+  # Monitoring configuration
+  METRICS_PORT: "9090"
+  METRICS_PATH: "/metrics"
+  HEALTH_CHECK_INTERVAL: "30"
+  
+  # Logging configuration
+  LOG_FORMAT: "json"
+  LOG_OUTPUT: "stdout"
+  LOG_FILE_PATH: "/app/logs/trading-bot.log"
+  LOG_MAX_SIZE: "100"  # MB
+  LOG_MAX_BACKUPS: "5"
+  LOG_MAX_AGE: "30"  # days
+  
+  # Alert thresholds
+  ALERT_CPU_THRESHOLD: "80"  # percentage
+  ALERT_MEMORY_THRESHOLD: "85"  # percentage
+  ALERT_ERROR_RATE_THRESHOLD: "0.05"  # 5%
+  ALERT_LATENCY_THRESHOLD: "1000"  # milliseconds
+  
+  # Performance optimization
+  ENABLE_PROFILING: "false"
+  ENABLE_TRACING: "true"
+  TRACE_SAMPLE_RATE: "0.1"  # 10% sampling
+  
+  # Trading bot specific configuration as YAML
+  trading-config.yaml: |
+    trading:
+      # Order execution
+      order_execution:
+        timeout: 30
+        retry_attempts: 3
+        retry_delay: 1
+        slippage_tolerance: 0.001
+        
+      # Market making specific
+      market_making:
+        spread_percentage: 0.002
+        order_levels: 5
+        order_amount_multiplier: 1.5
+        inventory_target: 0.5
+        inventory_range: 0.3
+        
+      # Arbitrage specific
+      arbitrage:
+        min_profit_percentage: 0.0005
+        max_exposure_time: 60
+        correlation_threshold: 0.95
+        
+      # Scalping specific
+      scalping:
+        min_price_movement: 0.0002
+        max_position_time: 300
+        profit_target: 0.001
+        
+      # Performance tracking
+      performance:
+        calculation_interval: 60
+        metrics_window: 3600
+        benchmark_symbol: "BTCUSDT"
+        
+    # Feature calculation
+    features:
+      price_features:
+        - returns_1m
+        - returns_5m
+        - returns_15m
+        - log_returns
+        - price_momentum
+        
+      volume_features:
+        - volume_ratio
+        - volume_momentum
+        - buy_sell_ratio
+        
+      orderbook_features:
+        - bid_ask_spread
+        - orderbook_imbalance
+        - depth_ratio
+        - micro_price
+        
+      technical_features:
+        - rsi_divergence
+        - macd_signal
+        - bollinger_position
+        - trend_strength
+
+---
+# ConfigMap for Fluent Bit log shipping
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-config
+  namespace: trading
+  labels:
+    app: fluent-bit
+data:
+  fluent-bit.conf: |
+    [SERVICE]
+        Flush         5
+        Log_Level     info
+        Daemon        off
+        Parsers_File  parsers.conf
+        
+    [INPUT]
+        Name              tail
+        Path              /app/logs/*.log
+        Parser            json
+        Tag               trading.*
+        Refresh_Interval  5
+        Mem_Buf_Limit     10MB
+        Skip_Long_Lines   On
+        
+    [FILTER]
+        Name         kubernetes
+        Match        trading.*
+        Kube_URL     https://kubernetes.default.svc:443
+        Kube_CA_File /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        Kube_Token_File /var/run/secrets/kubernetes.io/serviceaccount/token
+        Merge_Log    On
+        Keep_Log     Off
+        
+    [OUTPUT]
+        Name            es
+        Match           trading.*
+        Host            elasticsearch.logging.svc.cluster.local
+        Port            9200
+        Index           trading-logs
+        Type            _doc
+        Retry_Limit     5
+        
+  parsers.conf: |
+    [PARSER]
+        Name        json
+        Format      json
+        Time_Key    timestamp
+        Time_Format %Y-%m-%dT%H:%M:%S.%LZ
+        Time_Keep   On
+
+---
+# ConfigMap for Prometheus alerts
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alerts
+  namespace: trading
+  labels:
+    app: prometheus
+data:
+  trading-alerts.yml: |
+    groups:
+    - name: trading-bot-alerts
+      interval: 30s
+      rules:
+      
+      # High error rate
+      - alert: HighErrorRate
+        expr: rate(trading_bot_errors_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: trading-bot
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for {{ $labels.instance }}"
+      
+      # High latency
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, trading_bot_request_duration_seconds_bucket) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: trading-bot
+        annotations:
+          summary: "High latency detected"
+          description: "95th percentile latency is {{ $value }}s for {{ $labels.instance }}"
+      
+      # Pod restart
+      - alert: PodRestartingTooOften
+        expr: rate(kube_pod_container_status_restarts_total{namespace="trading",pod=~"trading-bot-.*"}[15m]) > 0
+        for: 5m
+        labels:
+          severity: critical
+          component: trading-bot
+        annotations:
+          summary: "Pod restarting too often"
+          description: "Pod {{ $labels.pod }} has restarted {{ $value }} times in the last 15 minutes"
+      
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total{namespace="trading",pod=~"trading-bot-.*"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: trading-bot
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value | humanizePercentage }} for {{ $labels.pod }}"
+      
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{namespace="trading",pod=~"trading-bot-.*"} / container_spec_memory_limit_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          component: trading-bot
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }} for {{ $labels.pod }}"
+      
+      # Trading specific alerts
+      - alert: NoTradesExecuted
+        expr: increase(trading_bot_trades_total[1h]) == 0
+        for: 1h
+        labels:
+          severity: warning
+          component: trading-bot
+        annotations:
+          summary: "No trades executed"
+          description: "No trades have been executed in the last hour"
+      
+      - alert: HighDrawdown
+        expr: trading_bot_drawdown_percentage > 0.15
+        for: 5m
+        labels:
+          severity: critical
+          component: trading-bot
+        annotations:
+          summary: "High drawdown detected"
+          description: "Drawdown is {{ $value | humanizePercentage }}"
+      
+      - alert: ExchangeConnectionLost
+        expr: up{job="exchange-connections"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: trading-bot
+        annotations:
+          summary: "Exchange connection lost"
+          description: "Connection to {{ $labels.exchange }} is down"
